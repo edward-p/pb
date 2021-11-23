@@ -2,7 +2,9 @@
 
 # Build
 
-`cargo build --release`
+``` bash
+$ cargo build --release
+```
 
 # Environment Variables
 
@@ -11,4 +13,6 @@
 
 # Run
 
-`$ PB_DATA="/some/path" PB_SITE="https://pb.example.com" pb`
+``` bash
+$ PB_DATA="/some/path" PB_SITE="https://pb.example.com" pb
+```
