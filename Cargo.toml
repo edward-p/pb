@@ -6,5 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = { version = "0.5.0-rc.1" }
+rocket = "0.5.0-rc.1" 
 infer = "0.5.0"
+rocket_dyn_templates = { version = "0.1.0-rc.1", features = ["tera"] }

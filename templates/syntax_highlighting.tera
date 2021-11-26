@@ -1,0 +1,18 @@
+{% set prism_cdn = "https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0" %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ tittle }}</title>
+
+    <link rel="stylesheet" href="{{ prism_cdn }}/themes/prism.min.css"/>
+    <link rel="stylesheet" href="{{ prism_cdn }}/plugins/line-numbers/prism-line-numbers.min.css"/>
+
+    <script src="{{ prism_cdn }}/prism.min.js"></script>
+    <script src="{{ prism_cdn }}/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="{{ prism_cdn }}/components/prism-{{ lang }}.min.js"></script>
+</head>
+<body>
+    <pre class="line-numbers"><code class="language-{{lang}}">{{content}}</code></pre>
+</body>
+</html>

@@ -3,7 +3,9 @@ use rocket::form::Form;
 use rocket::http::ContentType;
 use rocket::response::Redirect;
 use rocket::State;
-use std::fs::{self, File};
+use rocket_dyn_templates::Template;
+use std::collections::HashMap;
+use std::fs::{self, read_to_string, File};
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
@@ -88,6 +90,23 @@ async fn retrieve_content(
     Some((content_type, rocket::tokio::fs::File::open(path).await.ok()))
 }
 
+#[get("/<id>/<lang>")]
+fn syntax_highlighting(id: &str, lang: &str, pb_config: &State<PbConfig>) -> Option<Template> {
+    let mut context: HashMap<String, String> = HashMap::new();
+    context.insert("tittle".into(), id.into());
+    context.insert("lang".into(), lang.into());
+
+    let path = Path::new(&pb_config.pb_data).join("content").join(id);
+
+    if !path.exists() {
+        return None;
+    }
+
+    let content = read_to_string(path).unwrap();
+    context.insert("content".into(), content);
+    Some(Template::render("syntax_highlighting", &context))
+}
+
 #[get("/u/<id>")]
 fn retrieve_url(id: &str, pb_config: &State<PbConfig>) -> Option<Redirect> {
     let path = Path::new(&pb_config.pb_data).join("url").join(id);
@@ -129,12 +148,14 @@ async fn delete_file(path: PathBuf) {
 fn rocket() -> _ {
     rocket::build()
         .manage(PbConfig::new())
+        .attach(Template::fairing())
         .mount(
             "/",
             routes![
                 index,
                 retrieve_content,
                 retrieve_url,
+                syntax_highlighting,
                 delete_url,
                 delete_content,
                 paste
