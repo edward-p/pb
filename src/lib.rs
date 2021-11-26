@@ -104,6 +104,7 @@ pub struct PlainTeapot(pub &'static str);
 pub struct PbConfig {
     pub pb_data: String,
     pub pb_site: String,
+    pub index: String,
 }
 
 impl Deref for PbConfig {
@@ -126,6 +127,32 @@ impl PbConfig {
             Ok(pb_site) => pb_site,
             Err(_) => "http://localhost:8000".into(),
         };
-        PbConfig { pb_data, pb_site }
+
+        let index = format!(
+            "
+    USAGE
+
+      PASTE
+
+          curl {} -F 'c=@-;type=*/*' < /path/to/file
+
+      URL SHORTEN
+  
+          curl {} -F 'u=@-;type=*/*' <<< 'url_to_shorten'
+
+      DELETE
+
+          for content: curl -X DELETE {}/hex
+
+          for url: curl -X DELETE {}/u/hex
+    \n",
+            pb_site, pb_site, pb_site, pb_site
+        );
+
+        PbConfig {
+            pb_data,
+            pb_site,
+            index,
+        }
     }
 }

@@ -63,28 +63,8 @@ async fn paste(pb_config: &State<PbConfig>, paste: Form<Paste>) -> String {
 }
 
 #[get("/")]
-fn index(pb_config: &State<PbConfig>) -> String {
-    let site = &pb_config.pb_site;
-    format!(
-        "
-    USAGE
-
-      PASTE
-
-          curl {} -F 'c=@-;type=*/*' < /path/to/file
-
-      URL SHORTEN
-  
-          curl {} -F 'u=@-;type=*/*' <<< 'url_to_shorten'
-
-      DELETE
-
-          for content: curl -X DELETE {}/hex
-
-          for url: curl -X DELETE {}/u/hex
-    ",
-        site, site, site, site
-    )
+fn index(pb_config: &State<PbConfig>) -> &str {
+    &pb_config.index.as_str()
 }
 
 #[get("/<id>")]
