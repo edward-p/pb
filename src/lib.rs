@@ -36,7 +36,7 @@ pub struct Content {
 
 impl Content {
     fn from(value: ContentValue) -> Content {
-        const BASE64: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_=";
+        const BASE63: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
         const SIZE: usize = 5;
 
         // calculate hash
@@ -53,7 +53,7 @@ impl Content {
         for i in (1..SIZE + 1).rev() {
             let shift = i * 8;
             let v = (hash_u64 << (64 - shift) >> 56) as usize;
-            hash_str.push(BASE64[v % 64] as char);
+            hash_str.push(BASE63[v % 63] as char);
         }
 
         Content {
