@@ -10,9 +10,14 @@
 
     <script src="{{ prism_cdn }}/prism.min.js"></script>
     <script src="{{ prism_cdn }}/plugins/line-numbers/prism-line-numbers.min.js"></script>
-    <script src="{{ prism_cdn }}/components/prism-{{ lang }}.min.js"></script>
+    <script src="{{ prism_cdn }}/plugins/autoloader/prism-autoloader.min.js"></script>
 </head>
 <body>
-    <pre class="line-numbers"><code class="language-{{lang}}">{{content}}</code></pre>
+    <pre class="line-numbers"><code class="language-{{lang}}" id="code">{{content}}</code></pre>
 </body>
+<style>
+* {
+    background: #f5f2f0;
+}
+</style>
 </html>
