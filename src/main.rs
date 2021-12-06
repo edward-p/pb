@@ -2,12 +2,12 @@ use pb::*;
 use rocket::form::Form;
 use rocket::http::ContentType;
 use rocket::response::Redirect;
+use rocket::tokio::fs::{self, File};
+use rocket::tokio::io::{self, AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use rocket::State;
 use rocket_dyn_templates::Template;
 use std::collections::HashMap;
-use std::fs::{self, read_to_string, File};
-use std::io::{BufRead, BufReader, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::str::FromStr;
 
 #[macro_use]
@@ -24,7 +24,7 @@ fn not_found_catcher() -> &'static str {
 }
 
 #[post("/", data = "<paste>")]
-async fn paste(pb_config: &State<PbConfig>, paste: Form<Paste>) -> String {
+async fn paste(pb_config: &State<PbConfig>, paste: Form<Paste>) -> io::Result<String> {
     let content = &paste.content;
 
     let bytes = match &content.value {
@@ -50,18 +50,18 @@ async fn paste(pb_config: &State<PbConfig>, paste: Form<Paste>) -> String {
     url.push_str("\n");
 
     if path.exists() {
-        return format!("{}Already exist!\n", url);
+        return Ok(format!("{}Already exist!\n", url));
     }
 
     let parent = path.parent().unwrap();
     if !parent.exists() {
-        fs::create_dir_all(parent).unwrap();
+        fs::create_dir_all(parent).await?;
     }
 
-    let mut file = fs::File::create(path).unwrap();
-    file.write(&bytes).unwrap();
+    let mut file = File::create(path).await?;
+    file.write_all(&bytes).await?;
 
-    url
+    Ok(url)
 }
 
 #[get("/")]
@@ -91,7 +91,11 @@ async fn retrieve_content(
 }
 
 #[get("/<id>/<lang>")]
-fn syntax_highlighting(id: &str, lang: &str, pb_config: &State<PbConfig>) -> Option<Template> {
+async fn syntax_highlighting(
+    id: &str,
+    lang: &str,
+    pb_config: &State<PbConfig>,
+) -> io::Result<Option<Template>> {
     let mut context: HashMap<String, String> = HashMap::new();
     context.insert("tittle".into(), id.into());
     context.insert("lang".into(), lang.into());
@@ -99,49 +103,42 @@ fn syntax_highlighting(id: &str, lang: &str, pb_config: &State<PbConfig>) -> Opt
     let path = Path::new(&pb_config.pb_data).join("content").join(id);
 
     if !path.exists() {
-        return None;
+        return Ok(None);
     }
 
-    let content = read_to_string(path).unwrap();
+    let mut file = File::open(path).await?;
+    let mut buffer: Vec<u8> = Vec::new();
+    file.read_to_end(&mut buffer).await?;
+    let content = String::from_utf8(buffer).unwrap();
     context.insert("content".into(), content);
-    Some(Template::render("syntax_highlighting", &context))
+
+    Ok(Some(Template::render("syntax_highlighting", &context)))
 }
 
 #[get("/u/<id>")]
-fn retrieve_url(id: &str, pb_config: &State<PbConfig>) -> Option<Redirect> {
+async fn retrieve_url(id: &str, pb_config: &State<PbConfig>) -> io::Result<Option<Redirect>> {
     let path = Path::new(&pb_config.pb_data).join("url").join(id);
     if !path.exists() {
-        return None;
+        return Ok(None);
     }
 
-    let reader = BufReader::new(File::open(path).unwrap());
+    let mut reader = BufReader::new(File::open(path).await?);
+    let mut line = String::new();
+    reader.read_line(&mut line).await?;
 
-    match reader.lines().next() {
-        Some(line) => match line {
-            Ok(url) => Some(Redirect::to(url.trim().to_string())),
-            Err(_) => None,
-        },
-        None => None,
-    }
+    Ok(Some(Redirect::to(String::from(line.trim()))))
 }
 
 #[delete("/<id>")]
-async fn delete_content(id: &str, pb_config: &State<PbConfig>) -> String {
-    delete_file(Path::new(&pb_config.pb_data).join("content").join(id)).await;
-    "Done!\n".into()
+async fn delete_content(id: &str, pb_config: &State<PbConfig>) -> io::Result<&'static str> {
+    fs::remove_file(Path::new(&pb_config.pb_data).join("content").join(id)).await?;
+    Ok("Done!\n")
 }
 
 #[delete("/u/<id>")]
-async fn delete_url(id: &str, pb_config: &State<PbConfig>) -> String {
-    delete_file(Path::new(&pb_config.pb_data).join("url").join(id)).await;
-    "Done!\n".into()
-}
-
-async fn delete_file(path: PathBuf) {
-    rocket::tokio::fs::remove_file(&path)
-        .await
-        .ok()
-        .expect(format!("Unable to remove {:?}", path).as_str());
+async fn delete_url(id: &str, pb_config: &State<PbConfig>) -> io::Result<&'static str> {
+    fs::remove_file(Path::new(&pb_config.pb_data).join("url").join(id)).await?;
+    Ok("Done!\n")
 }
 
 #[launch]
