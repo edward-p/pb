@@ -75,8 +75,7 @@ impl<'r> FromFormField<'r> for Content {
             .data
             .open(20.mebibytes())
             .stream_to(&mut bytes)
-            .await
-            .unwrap();
+            .await?;
 
         let name = field.name.as_name().as_str();
         println!("{}", name);
@@ -85,7 +84,7 @@ impl<'r> FromFormField<'r> for Content {
             Ok(Content::from(ContentValue::Bytes(bytes)))
         } else if name == "u" || name == "url" {
             // Url
-            let url = String::from_utf8(bytes).unwrap();
+            let url = String::from_utf8(bytes).unwrap_or("".into());
             if !url.starts_with("http://") && !url.starts_with("https://") {
                 return Err((Error::validation("I'm a teapot.")).into());
             }
