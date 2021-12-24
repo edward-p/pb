@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <title>{{ tittle }}</title>
 
-    <link rel="stylesheet" href="{{ prism_cdn }}/themes/prism.min.css"/>
-    <link rel="stylesheet" href="{{ prism_cdn }}/plugins/line-numbers/prism-line-numbers.min.css"/>
+    <link rel="stylesheet" href="{{ prism_cdn | safe }}/themes/prism.min.css"/>
+    <link rel="stylesheet" href="{{ prism_cdn | safe }}/plugins/line-numbers/prism-line-numbers.min.css"/>
 
-    <script src="{{ prism_cdn }}/prism.min.js"></script>
-    <script src="{{ prism_cdn }}/plugins/line-numbers/prism-line-numbers.min.js"></script>
-    <script src="{{ prism_cdn }}/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="{{ prism_cdn | safe }}/prism.min.js"></script>
+    <script src="{{ prism_cdn | safe }}/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="{{ prism_cdn | safe }}/plugins/autoloader/prism-autoloader.min.js"></script>
 </head>
 <body>
-    <pre class="line-numbers"><code class="language-{{lang}}" id="code">{{content}}</code></pre>
+    <pre class="line-numbers"><code class="language-{{ lang | safe }}" id="code">{{ content }}</code></pre>
 </body>
 <style>
 * {
