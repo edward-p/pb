@@ -11,13 +11,14 @@
     <script src="{{ prism_cdn | safe }}/prism.min.js"></script>
     <script src="{{ prism_cdn | safe }}/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <script src="{{ prism_cdn | safe }}/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <style>
+      * {
+        background: #f5f2f0;
+      }
+    </style>
 </head>
 <body>
     <pre class="line-numbers"><code class="language-{{ lang | safe }}" id="code">{{ content }}</code></pre>
 </body>
-<style>
-* {
-    background: #f5f2f0;
-}
-</style>
 </html>
