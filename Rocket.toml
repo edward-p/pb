@@ -1,0 +1,4 @@
+## defaults for _all_ profiles
+[default]
+address = "0.0.0.0"
+limits = { data-form = "20 Mib" }
