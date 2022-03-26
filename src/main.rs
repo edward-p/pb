@@ -148,7 +148,7 @@ fn rocket() -> _ {
         .attach(Template::fairing())
         .mount(
             "/",
-            routes![
+            rocket::routes![
                 index,
                 retrieve_content,
                 retrieve_url,
@@ -158,5 +158,5 @@ fn rocket() -> _ {
                 paste
             ],
         )
-        .register("/", catchers![not_found_catcher, default_catcher])
+        .register("/", rocket::catchers![not_found_catcher, default_catcher])
 }
