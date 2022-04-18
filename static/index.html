@@ -84,6 +84,10 @@
     let textBtn = document.getElementById("text-paste-btn");
     let urlBtn = document.getElementById("url-paste-btn");
 
+    async function copy(code) {
+      await navigator.clipboard.writeText(code);
+    }
+
     let paste = (data) => {
       fetch("/", {
         method: "post",
@@ -93,7 +97,8 @@
           return res.text();
         })
         .then((t) => {
-          alert(t);
+          copy(t.substring(0, t.indexOf("\n")));
+          alert(`URL is copied!\n${t}`);
         });
     };
 
