@@ -1,5 +1,6 @@
 use pb::*;
 use rocket::form::Form;
+use rocket::fs::{relative, FileServer};
 use rocket::http::ContentType;
 use rocket::response::Redirect;
 use rocket::tokio::fs::{self, File};
@@ -64,10 +65,10 @@ async fn paste(pb_config: &State<PbConfig>, paste: Form<Paste>) -> io::Result<St
     Ok(url)
 }
 
-#[get("/")]
-fn index(pb_config: &State<PbConfig>) -> &str {
-    pb_config.index.as_str()
-}
+// #[get("/")]
+// fn index(pb_config: &State<PbConfig>) -> &str {
+//     pb_config.index.as_str()
+// }
 
 #[get("/<id>")]
 async fn retrieve_content(
@@ -149,7 +150,7 @@ fn rocket() -> _ {
         .mount(
             "/",
             rocket::routes![
-                index,
+                // index,
                 retrieve_content,
                 retrieve_url,
                 syntax_highlighting,
@@ -158,5 +159,6 @@ fn rocket() -> _ {
                 paste
             ],
         )
+        .mount("/", FileServer::from(relative!("static")))
         .register("/", rocket::catchers![not_found_catcher, default_catcher])
 }
