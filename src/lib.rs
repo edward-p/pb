@@ -84,7 +84,7 @@ impl<'r> FromFormField<'r> for Content {
             Ok(Content::from(ContentValue::Bytes(bytes)))
         } else if name == "u" || name == "url" {
             // Url
-            let url = String::from_utf8(bytes).unwrap_or("".into());
+            let url = String::from_utf8(bytes).unwrap_or_else(|_| "".into());
             if !url.starts_with("http://") && !url.starts_with("https://") {
                 return Err((Error::validation("I'm a teapot.")).into());
             }
@@ -111,6 +111,12 @@ impl Deref for PbConfig {
 
     fn deref(&self) -> &Self::Target {
         &self.pb_data
+    }
+}
+
+impl Default for PbConfig {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

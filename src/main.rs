@@ -47,7 +47,7 @@ async fn paste(pb_config: &State<PbConfig>, paste: Form<Paste>) -> io::Result<St
     }
 
     url.push_str(content.hash.as_str());
-    url.push_str("\n");
+    url.push('\n');
 
     if path.exists() {
         return Ok(format!("{}Already exist!\n", url));
@@ -59,14 +59,14 @@ async fn paste(pb_config: &State<PbConfig>, paste: Form<Paste>) -> io::Result<St
     }
 
     let mut file = File::create(path).await?;
-    file.write_all(&bytes).await?;
+    file.write_all(bytes).await?;
 
     Ok(url)
 }
 
 #[get("/")]
 fn index(pb_config: &State<PbConfig>) -> &str {
-    &pb_config.index.as_str()
+    pb_config.index.as_str()
 }
 
 #[get("/<id>")]
