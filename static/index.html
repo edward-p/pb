@@ -89,17 +89,13 @@
     }
 
     let paste = (data) => {
-      fetch("/", {
+      const response = await fetch("/", {
         method: "post",
         body: data,
-      })
-        .then((res) => {
-          return res.text();
-        })
-        .then((t) => {
-          copy(t.substring(0, t.indexOf("\n")));
-          alert(`URL is copied!\n${t}`);
-        });
+      });
+      const text = await response.text();
+      await copy(t.substring(0, t.indexOf("\n")));
+      alert(`URL is copied!\n${t}`);
     };
 
     fileBtn.onclick = () => {
