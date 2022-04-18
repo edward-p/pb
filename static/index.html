@@ -9,7 +9,7 @@
     <div class="group">
       <div class="input-col">
         <label for="file-input">file</label>
-        <input type="file" id="file-input" />
+        <input type="file" id="file-input" autocomplete="off" />
       </div>
       <div class="btn-col">
         <button id="file-paste-btn">Paste</button>
@@ -18,7 +18,7 @@
     <div class="group">
       <div class="input-col">
         <label for="text-input">text</label>
-        <textarea id="text-input"></textarea>
+        <textarea id="text-input" autocomplete="off"></textarea>
       </div>
       <div class="btn-col">
         <button id="text-paste-btn">Paste</button>
@@ -27,7 +27,7 @@
     <div class="group">
       <div class="input-col">
         <label for="url-input">url</label>
-        <input type="text" id="url-input" />
+        <input type="text" id="url-input" autocomplete="off" />
       </div>
       <div class="btn-col">
         <button id="url-paste-btn">Paste</button>
@@ -41,7 +41,7 @@
       margin-bottom: 20px;
     }
     body {
-      margin: 2vh 30vw;
+      margin: 2vh 25vw;
     }
     label {
       width: 20%;
@@ -80,12 +80,11 @@
       <p>for url:</p>
       <code>curl -X DELETE ${location.href}u/&lt;hash&gt;</code>`;
 
+    let fileBtn = document.getElementById("file-paste-btn");
     let textBtn = document.getElementById("text-paste-btn");
-    textBtn.onclick = () => {
-      let text = document.getElementById("text-input").value;
-      console.log(text);
-      let data = new FormData();
-      data.append("c", new Blob([text], { type: "*/*" }));
+    let urlBtn = document.getElementById("url-paste-btn");
+
+    let paste = (data) => {
       fetch("/", {
         method: "post",
         body: data,
@@ -94,8 +93,29 @@
           return res.text();
         })
         .then((t) => {
-          console.log(t);
+          alert(t);
         });
+    };
+
+    fileBtn.onclick = () => {
+      let file = document.getElementById("file-input").files[0];
+      let data = new FormData();
+      data.append("c", new Blob([file], { type: "*/*" }));
+      paste(data);
+    };
+
+    textBtn.onclick = () => {
+      let text = document.getElementById("text-input").value;
+      let data = new FormData();
+      data.append("c", new Blob([text], { type: "*/*" }));
+      paste(data);
+    };
+
+    urlBtn.onclick = () => {
+      let url = document.getElementById("url-input").value;
+      let data = new FormData();
+      data.append("u", new Blob([text], { type: "*/*" }));
+      paste(data);
     };
   </script>
 </html>
