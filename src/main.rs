@@ -1,6 +1,6 @@
 use pb::*;
 use rocket::form::Form;
-use rocket::fs::{relative, FileServer};
+use rocket::fs::FileServer;
 use rocket::http::ContentType;
 use rocket::response::Redirect;
 use rocket::tokio::fs::{self, File};
@@ -153,6 +153,6 @@ fn rocket() -> _ {
                 paste
             ],
         )
-        .mount("/", FileServer::from(relative!("static")))
+        .mount("/", FileServer::from("static"))
         .register("/", rocket::catchers![not_found_catcher, default_catcher])
 }
