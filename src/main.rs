@@ -65,11 +65,6 @@ async fn paste(pb_config: &State<PbConfig>, paste: Form<Paste>) -> io::Result<St
     Ok(url)
 }
 
-// #[get("/")]
-// fn index(pb_config: &State<PbConfig>) -> &str {
-//     pb_config.index.as_str()
-// }
-
 #[get("/<id>")]
 async fn retrieve_content(
     id: &str,
@@ -150,7 +145,6 @@ fn rocket() -> _ {
         .mount(
             "/",
             rocket::routes![
-                // index,
                 retrieve_content,
                 retrieve_url,
                 syntax_highlighting,
