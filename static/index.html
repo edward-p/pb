@@ -94,8 +94,8 @@
         body: data,
       });
       const text = await response.text();
-      await copy(t.substring(0, t.indexOf("\n")));
-      alert(`URL is copied!\n${t}`);
+      await copy(text.substring(0, text.indexOf("\n")));
+      alert(`URL is copied!\n${text}`);
     };
 
     fileBtn.onclick = () => {
