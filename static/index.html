@@ -115,7 +115,7 @@
     urlBtn.onclick = () => {
       let url = document.getElementById("url-input").value;
       let data = new FormData();
-      data.append("u", new Blob([text], { type: "*/*" }));
+      data.append("u", new Blob([url], { type: "*/*" }));
       paste(data);
     };
   </script>
