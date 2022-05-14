@@ -34,7 +34,7 @@ pub struct Content {
     pub hash: String,
 }
 
-impl Content {
+impl From<ContentValue> for Content {
     fn from(value: ContentValue) -> Content {
         const BASE63: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
         const SIZE: usize = 5;
@@ -81,7 +81,7 @@ impl<'r> FromFormField<'r> for Content {
         println!("{}", name);
         if name == "c" || name == "content" {
             // Content
-            Ok(Content::from(ContentValue::Bytes(bytes)))
+            Ok(ContentValue::Bytes(bytes).into())
         } else if name == "u" || name == "url" {
             // Url
             let url = String::from_utf8(bytes).unwrap_or_else(|_| "".into());
@@ -89,7 +89,7 @@ impl<'r> FromFormField<'r> for Content {
                 return Err((Error::validation("I'm a teapot.")).into());
             }
 
-            Ok(Content::from(ContentValue::Url(url.into())))
+            Ok(ContentValue::Url(url.into()).into())
         } else {
             Err((Error::validation("I'm a teapot.")).into())
         }
