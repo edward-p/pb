@@ -1,4 +1,8 @@
-## defaults for _all_ profiles
+## rocket configs
 [default]
 address = "0.0.0.0"
-limits = { data-form = "20 Mib" }
+
+## pb custom values:
+pb_data = "./pb_data"
+pb_site = "http://localhost:8000"
+static_file_path = "./static"

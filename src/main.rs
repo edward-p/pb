@@ -1,4 +1,8 @@
+use pb::entity::{ContentValue, Paste};
 use pb::*;
+use rocket::fairing::AdHoc;
+use rocket::figment::providers::Serialized;
+use rocket::figment::Figment;
 use rocket::form::Form;
 use rocket::fs::FileServer;
 use rocket::http::ContentType;
@@ -139,8 +143,14 @@ async fn delete_url(id: &str, pb_config: &State<PbConfig>) -> io::Result<&'stati
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build()
-        .manage(PbConfig::new())
+    let figment = Figment::from(rocket::Config::default())
+        .merge(Serialized::defaults(PbConfig::default()))
+        .join(("limits.data-form", "20 Mib"));
+
+    let config: PbConfig = figment.extract().unwrap();
+
+    rocket::custom(figment)
+        .attach(AdHoc::config::<PbConfig>())
         .attach(Template::fairing())
         .mount(
             "/",
@@ -153,6 +163,6 @@ fn rocket() -> _ {
                 paste
             ],
         )
-        .mount("/", FileServer::from("static"))
+        .mount("/", FileServer::from(config.static_file_path))
         .register("/", rocket::catchers![not_found_catcher, default_catcher])
 }
