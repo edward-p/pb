@@ -21,25 +21,10 @@ pub struct PbConfig {
 
 impl Default for PbConfig {
     fn default() -> Self {
-        let pb_data = match env::var("PB_DATA") {
-            Ok(path) => path,
-            Err(_) => "./pb_data".into(),
-        };
-
-        let pb_site = match env::var("PB_SITE") {
-            Ok(pb_site) => pb_site,
-            Err(_) => "http://localhost:8000".into(),
-        };
-
-        let static_file_path = match env::var("STATIC_FILE_PATH") {
-            Ok(p) => p,
-            Err(_) => "./static".into(),
-        };
-
         Self {
-            pb_data,
-            pb_site,
-            static_file_path,
+            pb_data: "./pb_data".into(),
+            pb_site: "http://localhost:8000".into(),
+            static_file_path: "./static".into(),
         }
     }
 }
