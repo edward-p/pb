@@ -4,5 +4,5 @@ address = "0.0.0.0"
 
 # pb custom values:
 pb_data = "./pb_data"
-pb_site = "http://123456789:8000"
+pb_site = "http://localhost:8000"
 static_file_path = "./static"

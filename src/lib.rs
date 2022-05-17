@@ -1,6 +1,6 @@
 pub mod entity;
 
-use std::{env, str};
+use std::str;
 
 use rocket::serde::{Deserialize, Serialize};
 

@@ -2,7 +2,6 @@ use pb::entity::{ContentValue, Paste};
 use pb::*;
 use rocket::fairing::AdHoc;
 use rocket::figment::providers::{Env, Serialized};
-use rocket::figment::Figment;
 use rocket::form::Form;
 use rocket::fs::FileServer;
 use rocket::http::ContentType;
