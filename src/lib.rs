@@ -1,4 +1,7 @@
+pub mod catcher;
 pub mod entity;
+pub mod handler;
+pub mod responder;
 
 use std::str;
 
@@ -6,10 +9,6 @@ use rocket::serde::{Deserialize, Serialize};
 
 #[macro_use]
 extern crate rocket;
-
-#[derive(Responder)]
-#[response(status = 418, content_type = "plain")]
-pub struct PlainTeapot(pub &'static str);
 
 #[derive(Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
