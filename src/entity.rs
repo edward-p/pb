@@ -28,11 +28,11 @@ pub struct Content {
     pub hash: String,
 }
 
+const BASE63: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
+const SIZE: usize = 5;
+
 impl From<ContentValue> for Content {
     fn from(value: ContentValue) -> Content {
-        const BASE63: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_";
-        const SIZE: usize = 5;
-
         // calculate hash
         use ContentValue::*;
         let value_vec = match &value {
@@ -43,7 +43,7 @@ impl From<ContentValue> for Content {
         let hash_u64 = hasher.finish();
         let mut hash_str = String::with_capacity(SIZE);
 
-        // base64ify hash_u64
+        // baseXXify hash_u64
         for i in (1..SIZE + 1).rev() {
             let shift = i * 8;
             let v = (hash_u64 << (64 - shift) >> 56) as usize;
@@ -71,21 +71,13 @@ impl<'r> FromFormField<'r> for Content {
             .stream_to(&mut bytes)
             .await?;
 
-        let name = field.name.as_name().as_str();
-        println!("{}", name);
-        if name == "c" || name == "content" {
-            // Content
-            Ok(ContentValue::Bytes(bytes).into())
-        } else if name == "u" || name == "url" {
-            // Url
-            let url = String::from_utf8(bytes).unwrap_or_else(|_| "".into());
-            if !url.starts_with("http://") && !url.starts_with("https://") {
-                return Err((Error::validation("I'm a teapot.")).into());
+        use ContentValue::*;
+        match field.name.as_name().as_str() {
+            "c" | "content" => Ok(Bytes(bytes).into()),
+            "u" | "url" if &bytes[0..7] == b"http://" || &bytes[0..8] == b"https://" => {
+                Ok(Url(bytes).into())
             }
-
-            Ok(ContentValue::Url(url.into()).into())
-        } else {
-            Err((Error::validation("I'm a teapot.")).into())
+            _ => Err((Error::validation("I'm a teapot.")).into()),
         }
     }
 }
