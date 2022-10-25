@@ -9,3 +9,6 @@ edition = "2021"
 rocket = "0.5.0-rc.2"
 infer = "0.8.1"
 rocket_dyn_templates = { version = "0.1.0-rc.2", features = ["tera"] }
+
+[profile.release]
+lto = true
